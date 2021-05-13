@@ -1,18 +1,32 @@
+import { Suspense } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.css";
-import SingleTodo from "./component/SingleTodo";
-import Todos from "./component/Todos";
+import { routes } from "./routes";
 import StoreProvider from "./store/Store";
 
+function Loading() {
+  return <h1>Loading</h1>;
+}
 function App() {
   return (
     <StoreProvider>
-      <Router>
-        <Switch>
-          <Route path="/todos" component={Todos} />
-          <Route path="/singleTodo" component={SingleTodo} />
-        </Switch>
-      </Router>
+      <Suspense fallback={<Loading />}>
+        <Router>
+          <Switch>
+            {routes.map((route) => {
+              return (
+                route.authorization && (
+                  <Route
+                    path={route.path}
+                    component={route.component}
+                    exact={route.exact}
+                  />
+                )
+              );
+            })}
+          </Switch>
+        </Router>
+      </Suspense>
     </StoreProvider>
   );
 }
